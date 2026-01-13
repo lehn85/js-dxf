@@ -15,7 +15,7 @@
     "example": "examples"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --format cjs,esm --dts --out-dir dist --clean",
     "test": "echo \"Error: no test specified\" && exit 1",
     "bundle": "browserify -r ./dist/index.js:Drawing > ./examples/browser/dxf_bundle.js"
   },
@@ -38,6 +38,7 @@
     "@types/node": "^25.0.3",
     "browserify": "^16.2.3",
     "minimist": ">=1.2.3",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   }
 }

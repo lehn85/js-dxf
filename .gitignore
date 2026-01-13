@@ -7,4 +7,3 @@ pnpm-lock.yaml
 **.DS_Store
 **.dxf
 yarn.lock
-/dist
