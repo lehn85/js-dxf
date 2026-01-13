@@ -1,19 +1,24 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
 
 class LineType extends DatabaseObject {
+    name: string;
+    description: string;
+    elements: number[];
+
     /**
      * @param {string} name
      * @param {string} description
      * @param {array} elements - if elem > 0 it is a line, if elem < 0 it is gap, if elem == 0.0 it is a
      */
-    constructor(name, description, elements) {
+    constructor(name: string, description: string, elements: number[]) {
         super(["AcDbSymbolTableRecord", "AcDbLinetypeTableRecord"]);
         this.name = name;
         this.description = description;
         this.elements = elements;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         // https://www.autodesk.com/techpubs/autocad/acadr14/dxf/ltype_al_u05_c.htm
         manager.push(0, "LTYPE");
         super.tags(manager);
@@ -30,11 +35,11 @@ class LineType extends DatabaseObject {
         });
     }
 
-    getElementsSum() {
+    getElementsSum(): number {
         return this.elements.reduce((sum, element) => {
             return sum + Math.abs(element);
         }, 0);
     }
 }
 
-module.exports = LineType;
+export default LineType;

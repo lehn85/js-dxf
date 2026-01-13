@@ -1,21 +1,33 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Polyline extends DatabaseObject {
+    points: number[][]; // [x, y, bulge?]
+    closed: boolean;
+    startWidth: number;
+    endWidth: number;
+    elevation: number;
+    // @ts-ignore
+    layer: Layer;
+
     /**
      * @param {array} points - Array of points like [ [x1, y1], [x2, y2, bulge]... ]
      * @param {boolean} closed
      * @param {number} startWidth
      * @param {number} endWidth
+     * @param {number} elevation
      */
-    constructor(points, closed = false, startWidth = 0, endWidth = 0) {
+    constructor(points: number[][], closed: boolean = false, startWidth: number = 0, endWidth: number = 0, elevation: number = 0) {
         super(["AcDbEntity", "AcDbPolyline"]);
         this.points = points;
         this.closed = closed;
         this.startWidth = startWidth;
         this.endWidth = endWidth;
+        this.elevation = elevation;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "LWPOLYLINE");
         super.tags(manager);
         manager.push(8, this.layer.name);
@@ -24,6 +36,7 @@ class Polyline extends DatabaseObject {
         manager.push(370, -1);
         manager.push(90, this.points.length);
         manager.push(70, this.closed ? 1 : 0);
+        manager.push(38, this.elevation);
 
         this.points.forEach((point) => {
             const [x, y, z] = point;
@@ -38,4 +51,4 @@ class Polyline extends DatabaseObject {
     }
 }
 
-module.exports = Polyline;
+export default Polyline;

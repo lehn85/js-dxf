@@ -1,7 +1,24 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Face extends DatabaseObject {
-    constructor(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
+    x1: number;
+    y1: number;
+    z1: number;
+    x2: number;
+    y2: number;
+    z2: number;
+    x3: number;
+    y3: number;
+    z3: number;
+    x4: number;
+    y4: number;
+    z4: number;
+    // @ts-ignore
+    layer: Layer;
+
+    constructor(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, x3: number, y3: number, z3: number, x4: number, y4: number, z4: number) {
         super(["AcDbEntity", "AcDbFace"]);
         this.x1 = x1;
         this.y1 = y1;
@@ -17,7 +34,7 @@ class Face extends DatabaseObject {
         this.z4 = z4;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         //https://www.autodesk.com/techpubs/autocad/acadr14/dxf/3dface_al_u05_c.htm
         manager.push(0, "3DFACE");
         super.tags(manager);
@@ -38,4 +55,4 @@ class Face extends DatabaseObject {
     }
 }
 
-module.exports = Face;
+export default Face;

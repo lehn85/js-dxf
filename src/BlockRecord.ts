@@ -1,12 +1,15 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
 
 class BlockRecord extends DatabaseObject {
-    constructor(name) {
+    name: string;
+
+    constructor(name: string) {
         super(["AcDbSymbolTableRecord", "AcDbBlockTableRecord"]);
         this.name = name;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "BLOCK_RECORD");
         super.tags(manager);
         manager.push(2, this.name);
@@ -19,4 +22,4 @@ class BlockRecord extends DatabaseObject {
     }
 }
 
-module.exports = BlockRecord;
+export default BlockRecord;

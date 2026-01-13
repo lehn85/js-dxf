@@ -1,12 +1,19 @@
-const DatabaseObject = require("./DatabaseObject");
-const Handle = require("./Handle");
-const Vertex = require("./Vertex");
+import DatabaseObject from "./DatabaseObject.js";
+import Handle from "./Handle.js";
+import Vertex from "./Vertex.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Polyline3d extends DatabaseObject {
+    verticies: Vertex[];
+    seqendHandle: string;
+    // @ts-ignore
+    layer: Layer;
+
     /**
      * @param {[number, number, number][]} points - Array of points like [ [x1, y1, z1], [x2, y2, z2]... ]
      */
-    constructor(points) {
+    constructor(points: [number, number, number][]) {
         super(["AcDbEntity", "AcDb3dPolyline"]);
         this.verticies = points.map((point) => {
             const [x, y, z] = point;
@@ -17,7 +24,7 @@ class Polyline3d extends DatabaseObject {
         this.seqendHandle = Handle.next();
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "POLYLINE");
         super.tags(manager);
         manager.push(8, this.layer.name);
@@ -37,4 +44,4 @@ class Polyline3d extends DatabaseObject {
     }
 }
 
-module.exports = Polyline3d;
+export default Polyline3d;

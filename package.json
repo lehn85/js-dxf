@@ -2,14 +2,22 @@
   "name": "dxf-writer",
   "version": "1.18.4",
   "description": "Dead simple 2D DXF writer",
-  "main": "index.js",
-  "types": "./index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "directories": {
     "example": "examples"
   },
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "browserify -r ./src/Drawing.js:Drawing > ./examples/browser/dxf_bundle.js"
+    "bundle": "browserify -r ./dist/index.js:Drawing > ./examples/browser/dxf_bundle.js"
   },
   "repository": {
     "type": "git",
@@ -27,7 +35,9 @@
   },
   "homepage": "https://github.com/ognjen-petrovic/js-dxf#readme",
   "devDependencies": {
+    "@types/node": "^25.0.3",
     "browserify": "^16.2.3",
-    "minimist": ">=1.2.3"
+    "minimist": ">=1.2.3",
+    "typescript": "^5.9.3"
   }
 }

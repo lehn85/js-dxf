@@ -1,7 +1,13 @@
-const Handle = require("./Handle");
+import Handle from "./Handle.js";
+import TagsManager from "./TagsManager.js";
 
 class DatabaseObject {
-    constructor(subclass = null) {
+    handle: string;
+    ownerObjectHandle: string;
+    subclassMarkers: string[];
+    layer?: any;
+
+    constructor(subclass: string | string[] | null = null) {
         this.handle = Handle.next();
         this.ownerObjectHandle = "0";
         this.subclassMarkers = [];
@@ -18,7 +24,7 @@ class DatabaseObject {
      *
      * @param {TagsManager} manager
      */
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(5, this.handle);
         manager.push(330, this.ownerObjectHandle);
         for (const s of this.subclassMarkers) {
@@ -27,4 +33,4 @@ class DatabaseObject {
     }
 }
 
-module.exports = DatabaseObject;
+export default DatabaseObject;

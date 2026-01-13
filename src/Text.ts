@@ -1,26 +1,39 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
+import { HorizontalAlignment, VerticalAlignment } from "./Types.js";
 
 const H_ALIGN_CODES = ["left", "center", "right"];
 const V_ALIGN_CODES = ["baseline", "bottom", "middle", "top"];
 
 class Text extends DatabaseObject {
+    x: number;
+    y: number;
+    height: number;
+    rotation: number;
+    value: string;
+    hAlign: HorizontalAlignment;
+    vAlign: VerticalAlignment;
+    // @ts-ignore
+    layer: Layer;
+
     /**
      * @param {number} x - x
      * @param {number} y - y
      * @param {number} height - Text height
      * @param {number} rotation - Text rotation
      * @param {string} value - the string itself
-     * @param {string} [horizontalAlignment="left"] left | center | right
-     * @param {string} [verticalAlignment="baseline"] baseline | bottom | middle | top
+     * @param {HorizontalAlignment} [horizontalAlignment="left"] left | center | right
+     * @param {VerticalAlignment} [verticalAlignment="baseline"] baseline | bottom | middle | top
      */
     constructor(
-        x,
-        y,
-        height,
-        rotation,
-        value,
-        horizontalAlignment = "left",
-        verticalAlignment = "baseline"
+        x: number,
+        y: number,
+        height: number,
+        rotation: number,
+        value: string,
+        horizontalAlignment: HorizontalAlignment = "left",
+        verticalAlignment: VerticalAlignment = "baseline"
     ) {
         super(["AcDbEntity", "AcDbText"]);
         this.x = x;
@@ -32,7 +45,7 @@ class Text extends DatabaseObject {
         this.vAlign = verticalAlignment;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         //https://www.autodesk.com/techpubs/autocad/acadr14/dxf/text_al_u05_c.htm
         manager.push(0, "TEXT");
         super.tags(manager);
@@ -43,8 +56,8 @@ class Text extends DatabaseObject {
         manager.push(50, this.rotation);
 
         if (
-            H_ALIGN_CODES.includes(this.hAlign, 1) ||
-            V_ALIGN_CODES.includes(this.vAlign, 1)
+            H_ALIGN_CODES.includes(this.hAlign) ||
+            V_ALIGN_CODES.includes(this.vAlign)
         ) {
             manager.push(72, Math.max(H_ALIGN_CODES.indexOf(this.hAlign), 0));
 
@@ -62,4 +75,4 @@ class Text extends DatabaseObject {
     }
 }
 
-module.exports = Text;
+export default Text;

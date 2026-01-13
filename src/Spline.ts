@@ -1,6 +1,17 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Spline extends DatabaseObject {
+    controlPoints: number[][];
+    knots: number[];
+    weights: number[] | null;
+    fitPoints: number[][];
+    degree: number;
+    type: number;
+    // @ts-ignore
+    layer: Layer;
+
     /**
      * Creates a spline. See https://www.autodesk.com/techpubs/autocad/acad2000/dxf/spline_dxf_06.htm
      * @param {[Array]} controlPoints - Array of control points like [ [x1, y1], [x2, y2]... ]
@@ -10,17 +21,16 @@ class Spline extends DatabaseObject {
      * @param {[Array]} fitPoints - Array of fit points like [ [x1, y1], [x2, y2]... ]
      */
     constructor(
-        controlPoints,
-        degree = 3,
-        knots = null,
-        weights = null,
-        fitPoints = []
+        controlPoints: number[][],
+        degree: number = 3,
+        knots: number[] | null = null,
+        weights: number[] | null = null,
+        fitPoints: number[][] = []
     ) {
         super(["AcDbEntity", "AcDbSpline"]);
         if (controlPoints.length < degree + 1) {
             throw new Error(
-                `For degree ${degree} spline, expected at least ${
-                    degree + 1
+                `For degree ${degree} spline, expected at least ${degree + 1
                 } control points, but received only ${controlPoints.length}`
             );
         }
@@ -47,8 +57,7 @@ class Spline extends DatabaseObject {
 
         if (knots.length !== controlPoints.length + degree + 1) {
             throw new Error(
-                `Invalid knot vector length. Expected ${
-                    controlPoints.length + degree + 1
+                `Invalid knot vector length. Expected ${controlPoints.length + degree + 1
                 } but received ${knots.length}.`
             );
         }
@@ -77,7 +86,7 @@ class Spline extends DatabaseObject {
         // const splineType = 1024 * closed + 128 * periodic + 8 * rational + 4 * planar + 2 * linear
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         // https://www.autodesk.com/techpubs/autocad/acad2000/dxf/spline_dxf_06.htm
         manager.push(0, "SPLINE");
         super.tags(manager);
@@ -113,4 +122,4 @@ class Spline extends DatabaseObject {
     }
 }
 
-module.exports = Spline;
+export default Spline;

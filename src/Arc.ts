@@ -1,6 +1,16 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Arc extends DatabaseObject {
+    x: number;
+    y: number;
+    r: number;
+    startAngle: number;
+    endAngle: number;
+    // @ts-ignore
+    layer: Layer;
+
     /**
      * @param {number} x - Center x
      * @param {number} y - Center y
@@ -8,7 +18,7 @@ class Arc extends DatabaseObject {
      * @param {number} startAngle - degree
      * @param {number} endAngle - degree
      */
-    constructor(x, y, r, startAngle, endAngle) {
+    constructor(x: number, y: number, r: number, startAngle: number, endAngle: number) {
         super(["AcDbEntity", "AcDbCircle"]);
         this.x = x;
         this.y = y;
@@ -17,7 +27,7 @@ class Arc extends DatabaseObject {
         this.endAngle = endAngle;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         //https://www.autodesk.com/techpubs/autocad/acadr14/dxf/line_al_u05_c.htm
         manager.push(0, "ARC");
         super.tags(manager);
@@ -30,4 +40,4 @@ class Arc extends DatabaseObject {
     }
 }
 
-module.exports = Arc;
+export default Arc;

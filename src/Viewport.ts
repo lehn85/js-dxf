@@ -1,13 +1,17 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
 
 class Viewport extends DatabaseObject {
-    constructor(name, height) {
+    name: string;
+    height: number;
+
+    constructor(name: string, height: number) {
         super(["AcDbSymbolTableRecord", "AcDbViewportTableRecord"]);
         this.name = name;
         this.height = height;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "VPORT");
         super.tags(manager);
         manager.push(2, this.name);
@@ -17,4 +21,4 @@ class Viewport extends DatabaseObject {
     }
 }
 
-module.exports = Viewport;
+export default Viewport;

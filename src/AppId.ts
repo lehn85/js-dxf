@@ -1,12 +1,15 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
 
 class AppId extends DatabaseObject {
-    constructor(name) {
+    name: string;
+
+    constructor(name: string) {
         super(["AcDbSymbolTableRecord", "AcDbRegAppTableRecord"]);
         this.name = name;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "APPID");
         super.tags(manager);
         manager.push(2, this.name);
@@ -15,4 +18,4 @@ class AppId extends DatabaseObject {
     }
 }
 
-module.exports = AppId;
+export default AppId;

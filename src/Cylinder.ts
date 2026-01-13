@@ -1,6 +1,19 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Cylinder extends DatabaseObject {
+    x: number;
+    y: number;
+    z: number;
+    r: number;
+    thickness: number;
+    extrusionDirectionX: number;
+    extrusionDirectionY: number;
+    extrusionDirectionZ: number;
+    // @ts-ignore
+    layer: Layer;
+
     /**
      * @param {number} x - Center x
      * @param {number} y - Center y
@@ -12,14 +25,14 @@ class Cylinder extends DatabaseObject {
      * @param {number} extrusionDirectionZ - Extrusion Direction z
      */
     constructor(
-        x,
-        y,
-        z,
-        r,
-        thickness,
-        extrusionDirectionX,
-        extrusionDirectionY,
-        extrusionDirectionZ
+        x: number,
+        y: number,
+        z: number,
+        r: number,
+        thickness: number,
+        extrusionDirectionX: number,
+        extrusionDirectionY: number,
+        extrusionDirectionZ: number
     ) {
         super(["AcDbEntity", "AcDbCircle"]);
         this.x = x;
@@ -27,12 +40,12 @@ class Cylinder extends DatabaseObject {
         this.z = z;
         this.r = r;
         this.thickness = thickness;
-        (this.extrusionDirectionX = extrusionDirectionX),
-            (this.extrusionDirectionY = extrusionDirectionY),
-            (this.extrusionDirectionZ = extrusionDirectionZ);
+        this.extrusionDirectionX = extrusionDirectionX;
+        this.extrusionDirectionY = extrusionDirectionY;
+        this.extrusionDirectionZ = extrusionDirectionZ;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "CIRCLE");
         super.tags(manager);
         manager.push(8, this.layer.name);
@@ -45,4 +58,4 @@ class Cylinder extends DatabaseObject {
     }
 }
 
-module.exports = Cylinder;
+export default Cylinder;

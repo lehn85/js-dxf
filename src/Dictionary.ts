@@ -1,6 +1,9 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
 
 class Dictionary extends DatabaseObject {
+    children: Record<string, DatabaseObject>;
+
     constructor() {
         super("AcDbDictionary");
         this.children = {};
@@ -8,15 +11,15 @@ class Dictionary extends DatabaseObject {
 
     /**
      *
-     * @param {*} name
+     * @param {string} name
      * @param {DatabaseObject} dictionary
      */
-    addChildDictionary(name, dictionary) {
+    addChildDictionary(name: string, dictionary: DatabaseObject): void {
         dictionary.ownerObjectHandle = this.handle;
         this.children[name] = dictionary;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "DICTIONARY");
         super.tags(manager);
         /* Duplicate record cloning flag - keep existing */
@@ -36,4 +39,4 @@ class Dictionary extends DatabaseObject {
     }
 }
 
-module.exports = Dictionary;
+export default Dictionary;

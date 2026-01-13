@@ -1,6 +1,18 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Ellipse extends DatabaseObject {
+    x: number;
+    y: number;
+    majorAxisX: number;
+    majorAxisY: number;
+    axisRatio: number;
+    startAngle: number;
+    endAngle: number;
+    // @ts-ignore
+    layer: Layer;
+
     /**
      * Creates an ellipse.
      * @param {number} x - Center x
@@ -11,7 +23,7 @@ class Ellipse extends DatabaseObject {
      * @param {number} startAngle - Start angle
      * @param {number} endAngle - End angle
      */
-    constructor(x, y, majorAxisX, majorAxisY, axisRatio, startAngle, endAngle) {
+    constructor(x: number, y: number, majorAxisX: number, majorAxisY: number, axisRatio: number, startAngle: number, endAngle: number) {
         super(["AcDbEntity", "AcDbEllipse"]);
         this.x = x;
         this.y = y;
@@ -22,7 +34,7 @@ class Ellipse extends DatabaseObject {
         this.endAngle = endAngle;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         // https://www.autodesk.com/techpubs/autocad/acadr14/dxf/ellipse_al_u05_c.htm
         manager.push(0, "ELLIPSE");
         super.tags(manager);
@@ -38,4 +50,4 @@ class Ellipse extends DatabaseObject {
     }
 }
 
-module.exports = Ellipse;
+export default Ellipse;

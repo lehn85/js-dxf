@@ -1,4 +1,8 @@
+import { HeaderValue } from "./Types.js";
+
 class TagsManager {
+    lines: (string | number)[];
+
     constructor() {
         this.lines = [];
     }
@@ -9,7 +13,7 @@ class TagsManager {
      * @param {number} y
      * @param {number} z
      */
-    point(x, y, z = 0) {
+    point(x: number, y: number, z: number = 0): void {
         this.push(10, x);
         this.push(20, y);
         this.push(30, z);
@@ -19,29 +23,29 @@ class TagsManager {
      *
      * @param {string} name The name of the section
      */
-    start(name) {
+    start(name: string): void {
         this.push(0, "SECTION");
         this.push(2, name);
     }
 
-    end() {
+    end(): void {
         this.push(0, "ENDSEC");
     }
 
-    addHeaderVariable(name, tagsElements) {
+    addHeaderVariable(name: string, tagsElements: HeaderValue[]): void {
         this.push(9, `$${name}`);
         tagsElements.forEach((tagElement) => {
             this.push(tagElement[0], tagElement[1]);
         });
     }
 
-    push(code, value) {
+    push(code: number | string, value: string | number): void {
         this.lines.push(code, value);
     }
 
-    toDxfString() {
+    toDxfString(): string {
         return this.lines.join("\n");
     }
 }
 
-module.exports = TagsManager;
+export default TagsManager;

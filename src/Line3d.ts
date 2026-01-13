@@ -1,7 +1,18 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
+import Layer from "./Layer.js";
 
 class Line3d extends DatabaseObject {
-    constructor(x1, y1, z1, x2, y2, z2) {
+    x1: number;
+    y1: number;
+    z1: number;
+    x2: number;
+    y2: number;
+    z2: number;
+    // @ts-ignore
+    layer: Layer;
+
+    constructor(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number) {
         super(["AcDbEntity", "AcDbLine"]);
         this.x1 = x1;
         this.y1 = y1;
@@ -11,7 +22,7 @@ class Line3d extends DatabaseObject {
         this.z2 = z2;
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         //https://www.autodesk.com/techpubs/autocad/acadr14/dxf/line_al_u05_c.htm
         manager.push(0, "LINE");
         super.tags(manager);
@@ -24,4 +35,4 @@ class Line3d extends DatabaseObject {
     }
 }
 
-module.exports = Line3d;
+export default Line3d;

@@ -1,29 +1,39 @@
-const LineType = require("./LineType");
-const Layer = require("./Layer");
-const Table = require("./Table");
-const DimStyleTable = require("./DimStyleTable");
-const TextStyle = require("./TextStyle");
-const Viewport = require("./Viewport");
-const AppId = require("./AppId");
-const Block = require("./Block");
-const BlockRecord = require("./BlockRecord");
-const Dictionary = require("./Dictionary");
-const Line = require("./Line");
-const Line3d = require("./Line3d");
-const Arc = require("./Arc");
-const Circle = require("./Circle");
-const Cylinder = require("./Cylinder");
-const Text = require("./Text");
-const Polyline = require("./Polyline");
-const Polyline3d = require("./Polyline3d");
-const Face = require("./Face");
-const Point = require("./Point");
-const Spline = require("./Spline");
-const Ellipse = require("./Ellipse");
-const TagsManager = require("./TagsManager");
-const Handle = require("./Handle");
+import LineType from "./LineType.js";
+import Layer from "./Layer.js";
+import Table from "./Table.js";
+import DimStyleTable from "./DimStyleTable.js";
+import TextStyle from "./TextStyle.js";
+import Viewport from "./Viewport.js";
+import AppId from "./AppId.js";
+import Block from "./Block.js";
+import BlockRecord from "./BlockRecord.js";
+import Dictionary from "./Dictionary.js";
+import Line from "./Line.js";
+import Line3d from "./Line3d.js";
+import Arc from "./Arc.js";
+import Circle from "./Circle.js";
+import Cylinder from "./Cylinder.js";
+import Text from "./Text.js";
+import Polyline from "./Polyline.js";
+import Polyline3d from "./Polyline3d.js";
+import Face from "./Face.js";
+import Point from "./Point.js";
+import Spline from "./Spline.js";
+import Ellipse from "./Ellipse.js";
+import TagsManager from "./TagsManager.js";
+import Handle from "./Handle.js";
+import { Unit, HorizontalAlignment, VerticalAlignment, Point2D as P2D, Point3D as P3D } from "./Types.js";
 
 class Drawing {
+    layers: { [key: string]: Layer };
+    activeLayer: Layer | null;
+    lineTypes: { [key: string]: LineType };
+    headers: { [key: string]: any };
+    tables: { [key: string]: Table };
+    blocks: { [key: string]: Block };
+    dictionary: Dictionary;
+    modelSpace!: Block;
+
     constructor() {
         this.layers = {};
         this.activeLayer = null;
@@ -55,22 +65,22 @@ class Drawing {
      * @param {string} description
      * @param {array} elements - if elem > 0 it is a line, if elem < 0 it is gap, if elem == 0.0 it is a
      */
-    addLineType(name, description, elements) {
+    addLineType(name: string, description: string, elements: number[]): Drawing {
         this.lineTypes[name] = new LineType(name, description, elements);
         return this;
     }
 
-    addLayer(name, colorNumber, lineTypeName) {
+    addLayer(name: string, colorNumber: number, lineTypeName: string): Drawing {
         this.layers[name] = new Layer(name, colorNumber, lineTypeName);
         return this;
     }
 
-    setActiveLayer(name) {
+    setActiveLayer(name: string): Drawing {
         this.activeLayer = this.layers[name];
         return this;
     }
 
-    addTable(name) {
+    addTable(name: string): Table {
         const table = new Table(name);
         this.tables[name] = table;
         return table;
@@ -81,32 +91,32 @@ class Drawing {
      * @param {string} name The name of the block.
      * @returns {Block}
      */
-    addBlock(name) {
+    addBlock(name: string): Block {
         const block = new Block(name);
         this.blocks[name] = block;
         return block;
     }
 
-    drawLine(x1, y1, x2, y2) {
-        this.activeLayer.addShape(new Line(x1, y1, x2, y2));
+    drawLine(x1: number, y1: number, x2: number, y2: number): Drawing {
+        this.activeLayer!.addShape(new Line(x1, y1, x2, y2));
         return this;
     }
 
-    drawLine3d(x1, y1, z1, x2, y2, z2) {
-        this.activeLayer.addShape(new Line3d(x1, y1, z1, x2, y2, z2));
+    drawLine3d(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): Drawing {
+        this.activeLayer!.addShape(new Line3d(x1, y1, z1, x2, y2, z2));
         return this;
     }
 
-    drawPoint(x, y) {
-        this.activeLayer.addShape(new Point(x, y));
+    drawPoint(x: number, y: number): Drawing {
+        this.activeLayer!.addShape(new Point(x, y));
         return this;
     }
 
-    drawRect(x1, y1, x2, y2, cornerLength, cornerBulge) {
+    drawRect(x1: number, y1: number, x2: number, y2: number, cornerLength?: number, cornerBulge?: number): Drawing {
         const w = x2 - x1;
         const h = y2 - y1;
         cornerBulge = cornerBulge || 0;
-        let p = null;
+        let p: Polyline;
         if (!cornerLength) {
             p = new Polyline(
                 [
@@ -132,7 +142,7 @@ class Drawing {
                 true
             );
         }
-        this.activeLayer.addShape(p);
+        this.activeLayer!.addShape(p);
         return this;
     }
 
@@ -152,15 +162,15 @@ class Drawing {
      * @returns {Drawing} - The current object of {@link Drawing}.
      */
     drawPolygon(
-        x,
-        y,
-        numberOfSides,
-        radius,
-        rotation = 0,
-        circumscribed = false
-    ) {
+        x: number,
+        y: number,
+        numberOfSides: number,
+        radius: number,
+        rotation: number = 0,
+        circumscribed: boolean = false
+    ): Drawing {
         const angle = (2 * Math.PI) / numberOfSides;
-        const vertices = [];
+        const vertices: number[][] = [];
         let d = radius;
         const rotationRad = (rotation * Math.PI) / 180;
         if (circumscribed) d = radius / Math.cos(Math.PI / numberOfSides);
@@ -170,7 +180,7 @@ class Drawing {
                 y + d * Math.cos(rotationRad + i * angle),
             ]);
         }
-        this.activeLayer.addShape(new Polyline(vertices, true));
+        this.activeLayer!.addShape(new Polyline(vertices, true));
         return this;
     }
 
@@ -181,8 +191,8 @@ class Drawing {
      * @param {number} startAngle - degree
      * @param {number} endAngle - degree
      */
-    drawArc(x1, y1, r, startAngle, endAngle) {
-        this.activeLayer.addShape(new Arc(x1, y1, r, startAngle, endAngle));
+    drawArc(x1: number, y1: number, r: number, startAngle: number, endAngle: number): Drawing {
+        this.activeLayer!.addShape(new Arc(x1, y1, r, startAngle, endAngle));
         return this;
     }
 
@@ -191,8 +201,8 @@ class Drawing {
      * @param {number} y1 - Center y
      * @param {number} r - radius
      */
-    drawCircle(x1, y1, r) {
-        this.activeLayer.addShape(new Circle(x1, y1, r));
+    drawCircle(x1: number, y1: number, r: number): Drawing {
+        this.activeLayer!.addShape(new Circle(x1, y1, r));
         return this;
     }
 
@@ -207,16 +217,16 @@ class Drawing {
      * @param {number} extrusionDirectionZ - Extrusion Direction z
      */
     drawCylinder(
-        x1,
-        y1,
-        z1,
-        r,
-        thickness,
-        extrusionDirectionX,
-        extrusionDirectionY,
-        extrusionDirectionZ
-    ) {
-        this.activeLayer.addShape(
+        x1: number,
+        y1: number,
+        z1: number,
+        r: number,
+        thickness: number,
+        extrusionDirectionX: number,
+        extrusionDirectionY: number,
+        extrusionDirectionZ: number
+    ): Drawing {
+        this.activeLayer!.addShape(
             new Cylinder(
                 x1,
                 y1,
@@ -237,19 +247,19 @@ class Drawing {
      * @param {number} height - Text height
      * @param {number} rotation - Text rotation
      * @param {string} value - the string itself
-     * @param {string} [horizontalAlignment="left"] left | center | right
-     * @param {string} [verticalAlignment="baseline"] baseline | bottom | middle | top
+     * @param {HorizontalAlignment} [horizontalAlignment="left"] left | center | right
+     * @param {VerticalAlignment} [verticalAlignment="baseline"] baseline | bottom | middle | top
      */
     drawText(
-        x1,
-        y1,
-        height,
-        rotation,
-        value,
-        horizontalAlignment = "left",
-        verticalAlignment = "baseline"
-    ) {
-        this.activeLayer.addShape(
+        x1: number,
+        y1: number,
+        height: number,
+        rotation: number,
+        value: string,
+        horizontalAlignment: HorizontalAlignment = "left",
+        verticalAlignment: VerticalAlignment = "baseline"
+    ): Drawing {
+        this.activeLayer!.addShape(
             new Text(
                 x1,
                 y1,
@@ -268,10 +278,11 @@ class Drawing {
      * @param {boolean} closed - Closed polyline flag
      * @param {number} startWidth - Default start width
      * @param {number} endWidth - Default end width
+     * @param {number} elevation - Default elevation
      */
-    drawPolyline(points, closed = false, startWidth = 0, endWidth = 0) {
-        this.activeLayer.addShape(
-            new Polyline(points, closed, startWidth, endWidth)
+    drawPolyline(points: number[][], closed: boolean = false, startWidth: number = 0, endWidth: number = 0, elevation: number = 0): Drawing {
+        this.activeLayer!.addShape(
+            new Polyline(points, closed, startWidth, endWidth, elevation)
         );
         return this;
     }
@@ -279,13 +290,13 @@ class Drawing {
     /**
      * @param {[number, number, number][]} points - Array of points like [ [x1, y1, z1], [x2, y2, z1]... ]
      */
-    drawPolyline3d(points) {
+    drawPolyline3d(points: [number, number, number][]): Drawing {
         points.forEach((point) => {
             if (point.length !== 3) {
-                throw "Require 3D coordinates";
+                throw new Error("Require 3D coordinates");
             }
         });
-        this.activeLayer.addShape(new Polyline3d(points));
+        this.activeLayer!.addShape(new Polyline3d(points));
         return this;
     }
 
@@ -293,8 +304,8 @@ class Drawing {
      *
      * @param {number} trueColor - Integer representing the true color, can be passed as an hexadecimal value of the form 0xRRGGBB
      */
-    setTrueColor(trueColor) {
-        this.activeLayer.setTrueColor(trueColor);
+    setTrueColor(trueColor: number): Drawing {
+        this.activeLayer!.setTrueColor(trueColor);
         return this;
     }
 
@@ -307,13 +318,13 @@ class Drawing {
      * @param {[Array]} fitPoints - Array of fit points like [ [x1, y1], [x2, y2]... ]
      */
     drawSpline(
-        controlPoints,
-        degree = 3,
-        knots = null,
-        weights = null,
-        fitPoints = []
-    ) {
-        this.activeLayer.addShape(
+        controlPoints: number[][],
+        degree: number = 3,
+        knots: number[] | null = null,
+        weights: number[] | null = null,
+        fitPoints: number[][] = []
+    ): Drawing {
+        this.activeLayer!.addShape(
             new Spline(controlPoints, degree, knots, weights, fitPoints)
         );
         return this;
@@ -330,15 +341,15 @@ class Drawing {
      * @param {number} endAngle - End angle
      */
     drawEllipse(
-        x1,
-        y1,
-        majorAxisX,
-        majorAxisY,
-        axisRatio,
-        startAngle = 0,
-        endAngle = 2 * Math.PI
-    ) {
-        this.activeLayer.addShape(
+        x1: number,
+        y1: number,
+        majorAxisX: number,
+        majorAxisY: number,
+        axisRatio: number,
+        startAngle: number = 0,
+        endAngle: number = 2 * Math.PI
+    ): Drawing {
+        this.activeLayer!.addShape(
             new Ellipse(
                 x1,
                 y1,
@@ -366,21 +377,21 @@ class Drawing {
      * @param {number} y4 - y
      * @param {number} z4 - z
      */
-    drawFace(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
-        this.activeLayer.addShape(
+    drawFace(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, x3: number, y3: number, z3: number, x4: number, y4: number, z4: number): Drawing {
+        this.activeLayer!.addShape(
             new Face(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4)
         );
         return this;
     }
 
-    _ltypeTable() {
+    _ltypeTable(): Table {
         const t = new Table("LTYPE");
         const ltypes = Object.values(this.lineTypes);
         for (const lt of ltypes) t.add(lt);
         return t;
     }
 
-    _layerTable(manager) {
+    _layerTable(): Table {
         const t = new Table("LAYER");
         const layers = Object.values(this.layers);
         for (const l of layers) t.add(l);
@@ -394,7 +405,7 @@ class Drawing {
      * @param {string} variable
      * @param {array} values Array of "two elements arrays". [  [value1_GroupCode, value1_value], [value2_GroupCode, value2_value]  ]
      */
-    header(variable, values) {
+    header(variable: string, values: any[]): Drawing {
         this.headers[variable] = values;
         return this;
     }
@@ -403,12 +414,12 @@ class Drawing {
      *
      * @param {string} unit see Drawing.UNITS
      */
-    setUnits(unit) {
+    setUnits(unit: Unit): Drawing {
         let value =
             typeof Drawing.UNITS[unit] != "undefined"
                 ? Drawing.UNITS[unit]
                 : Drawing.UNITS["Unitless"];
-        this.header("INSUNITS", [[70, Drawing.UNITS[unit]]]);
+        this.header("INSUNITS", [[70, value]]);
         return this;
     }
 
@@ -416,7 +427,7 @@ class Drawing {
      * in AutoDesk products. Call this method before serializing the drawing to get the most
      * compatible result.
      */
-    generateAutocadExtras() {
+    generateAutocadExtras(): void {
         if (!this.headers["ACADVER"]) {
             /* AutoCAD 2007 version. */
             this.header("ACADVER", [[1, "AC1021"]]);
@@ -466,7 +477,7 @@ class Drawing {
         this.dictionary.addChildDictionary("ACAD_GROUP", d);
     }
 
-    _tagsManager() {
+    _tagsManager(): TagsManager {
         const manager = new TagsManager();
 
         // Setup
@@ -536,57 +547,63 @@ class Drawing {
         return manager;
     }
 
-    toDxfString() {
+    toDxfString(): string {
         return this._tagsManager().toDxfString();
     }
+
+    //AutoCAD Color Index (ACI)
+    //http://sub-atomic.com/~moses/acadcolors.html
+    static ACI: { [key: string]: number } = {
+        LAYER: 0,
+        RED: 1,
+        YELLOW: 2,
+        GREEN: 3,
+        CYAN: 4,
+        BLUE: 5,
+        MAGENTA: 6,
+        WHITE: 7,
+    };
+
+    static LINE_TYPES = [
+        { name: "CONTINUOUS", description: "______", elements: [] },
+        { name: "DASHED", description: "_ _ _ ", elements: [5.0, -5.0] },
+        { name: "DOTTED", description: ". . . ", elements: [0.0, -5.0] },
+    ];
+
+    static LAYERS = [
+        { name: "0", colorNumber: 7, lineTypeName: "CONTINUOUS" },
+    ];
+
+    //https://www.autodesk.com/techpubs/autocad/acad2000/dxf/header_section_group_codes_dxf_02.htm
+
+    static UNITS: { [key: string]: number } = {
+        Unitless: 0,
+        Inches: 1,
+        Feet: 2,
+        Miles: 3,
+        Millimeters: 4,
+        Centimeters: 5,
+        Meters: 6,
+        Kilometers: 7,
+        Microinches: 8,
+        Mils: 9,
+        Yards: 10,
+        Angstroms: 11,
+        Nanometers: 12,
+        Microns: 13,
+        Decimeters: 14,
+        Decameters: 15,
+        Hectometers: 16,
+        Gigameters: 17,
+        "Astronomical units": 18,
+        "Light years": 19,
+        Parsecs: 20,
+    };
 }
 
-//AutoCAD Color Index (ACI)
-//http://sub-atomic.com/~moses/acadcolors.html
-Drawing.ACI = {
-    LAYER: 0,
-    RED: 1,
-    YELLOW: 2,
-    GREEN: 3,
-    CYAN: 4,
-    BLUE: 5,
-    MAGENTA: 6,
-    WHITE: 7,
-};
-
-Drawing.LINE_TYPES = [
-    { name: "CONTINUOUS", description: "______", elements: [] },
-    { name: "DASHED", description: "_ _ _ ", elements: [5.0, -5.0] },
-    { name: "DOTTED", description: ". . . ", elements: [0.0, -5.0] },
-];
-
-Drawing.LAYERS = [
-    { name: "0", colorNumber: Drawing.ACI.WHITE, lineTypeName: "CONTINUOUS" },
-];
-
-//https://www.autodesk.com/techpubs/autocad/acad2000/dxf/header_section_group_codes_dxf_02.htm
-Drawing.UNITS = {
-    Unitless: 0,
-    Inches: 1,
-    Feet: 2,
-    Miles: 3,
-    Millimeters: 4,
-    Centimeters: 5,
-    Meters: 6,
-    Kilometers: 7,
-    Microinches: 8,
-    Mils: 9,
-    Yards: 10,
-    Angstroms: 11,
-    Nanometers: 12,
-    Microns: 13,
-    Decimeters: 14,
-    Decameters: 15,
-    Hectometers: 16,
-    Gigameters: 17,
-    "Astronomical units": 18,
-    "Light years": 19,
-    Parsecs: 20,
-};
-
-module.exports = Drawing;
+export default Drawing;
+export type Point2D = P2D;
+export type Point3D = P3D;
+export type UnitType = Unit;
+export type HAlign = HorizontalAlignment;
+export type VAlign = VerticalAlignment;

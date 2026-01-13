@@ -1,18 +1,22 @@
-const DatabaseObject = require("./DatabaseObject");
+import DatabaseObject from "./DatabaseObject.js";
+import TagsManager from "./TagsManager.js";
 
 class Table extends DatabaseObject {
-    constructor(name) {
+    name: string;
+    elements: DatabaseObject[];
+
+    constructor(name: string) {
         super("AcDbSymbolTable");
         this.name = name;
         this.elements = [];
     }
 
-    add(element) {
+    add(element: DatabaseObject): void {
         element.ownerObjectHandle = this.handle;
         this.elements.push(element);
     }
 
-    tags(manager) {
+    tags(manager: TagsManager): void {
         manager.push(0, "TABLE");
         manager.push(2, this.name);
         super.tags(manager);
@@ -26,4 +30,4 @@ class Table extends DatabaseObject {
     }
 }
 
-module.exports = Table;
+export default Table;
